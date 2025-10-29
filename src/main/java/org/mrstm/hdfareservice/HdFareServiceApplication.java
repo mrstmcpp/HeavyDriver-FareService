@@ -1,0 +1,13 @@
+package org.mrstm.hdfareservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class HdFareServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(HdFareServiceApplication.class, args);
+    }
+
+}
