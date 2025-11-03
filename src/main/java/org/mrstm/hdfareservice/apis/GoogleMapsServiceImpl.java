@@ -11,7 +11,7 @@ import java.util.Map;
 
 
 @Service
-public class GoogleMapsServiceImpl implements GoogleMapsService{
+public class GoogleMapsServiceImpl implements GoogleMapsService {
     private final RestTemplate restTemplate;
     @Value("${google.maps.api-key}")
     private String apiKey;
@@ -29,15 +29,23 @@ public class GoogleMapsServiceImpl implements GoogleMapsService{
         double endLng = endLocation.getLongitude();
         String url = String.format("https://maps.googleapis.com/maps/api/distancematrix/json?origins=%s,%s&destinations=%s,%s&departure_time=now&key=%s",
                 startLat,startLng , endLat, endLng , apiKey
-                );
+        );
         var res = restTemplate.getForObject(url , Map.class);
         var element = ((List<Map>) ((Map) ((List<?>) res.get("rows")).get(0)).get("elements")).get(0);
+
+        List<String> destinationAddresses = (List<String>) res.get("destination_addresses");
+        List<String> originAddresses = (List<String>) res.get("origin_addresses");
+
+        String destinationAddress = destinationAddresses.get(0);
+        String originAddress = originAddresses.get(0);
 
         double distance = ((Number) ((Map) element.get("distance")).get("value")).doubleValue() / 1000.0;
         double duration = ((Number) ((Map) element.get("duration")).get("value")).doubleValue() / 60.0;
         double durationInTraffic = ((Number) ((Map) element.get("duration_in_traffic")).get("value")).doubleValue() / 60.0;
 
         return DistanceDuration.builder()
+                .startAddress(originAddress)
+                .endAddress(destinationAddress)
                 .distance(distance)
                 .duration(duration)
                 .durationInTraffic(durationInTraffic)
